@@ -1,0 +1,108 @@
+<!DOCTYPE>
+<html>
+<head>
+  <style>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  align-items: center;
+}
+
+label {
+  margin-right: 10px;
+}
+
+button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.status {
+  margin-top: 20px;
+}
+
+#status-text {
+  font-size: 24px;
+}
+
+#alarm-sound {
+  display: none;
+}
+
+  </style>
+<body>
+<div class="container">
+  <h1>Alarm Sekolah</h1>
+  <div class="form">
+    <label for="time">Waktu:</label>
+    <input type="time" id="time">
+    <button id="set-alarm">Set Alarm</button>
+  </div>
+  <div class="status">
+    <p id="status-text">Alarm belum diset</p>
+    <audio id="alarm-sound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
+  </div>
+  <script>
+const timeInput = document.getElementById('time');
+const setAlarmButton = document.getElementById('set-alarm');
+const statusText = document.getElementById('status-text');
+const alarmSound = document.getElementById('alarm-sound');
+
+let alarmTimeout;
+
+setAlarmButton.addEventListener('click', () => {
+  const timeParts = timeInput.value.split(':');
+  const hours = parseInt(timeParts[0], 10);
+  const minutes = parseInt(timeParts[1], 10);
+
+  if (isNaN(hours) || isNaN(minutes)) {
+    statusText.textContent = 'Waktu tidak valid';
+    return;
+  }
+
+  const now = new Date();
+  const alarmTime = new Date();
+  alarmTime.setHours(hours);
+  alarmTime.setMinutes(minutes);
+  alarmTime.setSeconds(0);
+
+  if (alarmTime <= now) {
+    alarmTime.setDate(alarmTime.getDate() + 1);
+  }
+
+  const timeDiff = alarmTime.getTime() - now.getTime();
+
+  statusText.textContent = `Alarm akan bunyi pada ${timeInput.value}`;
+
+  alarmTimeout = setTimeout(() => {
+    statusText.textContent = 'Alarm sedang berbunyi!';
+    alarmSound.play();
+    setTimeout(() => {
+      statusText.textContent = 'Alarm berhasil dimatikan';
+      alarmSound.pause();
+      alarmSound.currentTime = 0;
+    }, 10000);
+  }, timeDiff);
+});
+  </script>
+</div>
+</body>
+</head>
+</html>
